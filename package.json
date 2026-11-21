@@ -1,0 +1,14 @@
+{
+  "name": "better-youtube",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A quiet, intentional YouTube experience for Safari",
+  "scripts": {
+    "test": "playwright test",
+    "test:webkit": "playwright test --project=webkit",
+    "package": "sh scripts/package.sh"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.58.2"
+  }
+}
