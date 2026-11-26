@@ -11,6 +11,10 @@ async function storage(context) {
     const listeners = [];
     const messages = [];
     window.browser = {
+      declarativeNetRequest: {
+        getEnabledRulesets: async () => localStorage.skipAds === 'off' ? [] : ['skipAds'],
+        updateEnabledRulesets: async ({ enableRulesetIds }) => { localStorage.skipAds = enableRulesetIds ? 'on' : 'off'; }
+      },
       runtime: { onMessage: { addListener: listener => messages.push(listener) } },
       tabs: {
         query: async () => [{ id: 1 }],
@@ -279,7 +283,7 @@ test('player covers do not obscure page-level consent dialogs', async ({ page, c
   expect(await page.evaluate(() => document.elementFromPoint(300, 200).id)).toBe('consent');
 });
 
-test('popup saves all five switches, survives reload, and renders light/dark states', async ({ page, context }) => {
+test('popup saves all six switches, survives reload, and renders light/dark states', async ({ page, context }) => {
   await storage(context);
   await context.route('https://extension.test/**', route => {
     const file = new URL(route.request().url()).pathname.slice(1) || 'popup.html';
@@ -287,7 +291,7 @@ test('popup saves all five switches, survives reload, and renders light/dark sta
   });
   await page.setViewportSize({ width: 360, height: 600 });
   await page.goto('https://extension.test/popup.html');
-  await expect(page.getByRole('switch')).toHaveCount(5);
+  await expect(page.getByRole('switch')).toHaveCount(6);
   await expect(page.getByRole('switch', { name: 'Wait for play', exact: true })).toHaveCount(0);
   for (const input of await page.getByRole('switch').all()) await expect(input).toBeChecked();
   expect(await page.locator('footer').evaluate(footer => footer.getBoundingClientRect().bottom)).toBeLessThanOrEqual(600);

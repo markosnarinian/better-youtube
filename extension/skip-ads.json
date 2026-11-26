@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||youtube.com/youtubei/v1/player/ad_break^",
+      "initiatorDomains": ["www.youtube.com", "m.youtube.com"],
+      "resourceTypes": ["xmlhttprequest"]
+    }
+  },
+  {
+    "id": 2,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||youtube.com/pagead/",
+      "initiatorDomains": ["www.youtube.com", "m.youtube.com"],
+      "resourceTypes": ["xmlhttprequest", "script", "sub_frame", "image", "ping", "media", "other"]
+    }
+  }
+]

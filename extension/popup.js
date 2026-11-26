@@ -24,11 +24,16 @@
     input.addEventListener('change', async () => {
       input.disabled = true;
       try {
-        await api.storage.local.set({ [key]: input.checked });
+        if (key === 'skipAds') {
+          await api.declarativeNetRequest.updateEnabledRulesets(input.checked
+            ? { enableRulesetIds: [key] } : { disableRulesetIds: [key] });
+        } else {
+          await api.storage.local.set({ [key]: input.checked });
         // Explicit notification also reaches Safari tabs without storage change events.
-        const tabs = await api.tabs.query({ url: ['https://www.youtube.com/*', 'https://m.youtube.com/*'] });
-        await Promise.all(tabs.map(tab => api.tabs.sendMessage(tab.id,
-          { type: 'better-youtube-preferences-changed' }).catch(() => {})));
+          const tabs = await api.tabs.query({ url: ['https://www.youtube.com/*', 'https://m.youtube.com/*'] });
+          await Promise.all(tabs.map(tab => api.tabs.sendMessage(tab.id,
+            { type: 'better-youtube-preferences-changed' }).catch(() => {})));
+        }
         status.textContent = `${title} ${input.checked ? 'enabled' : 'disabled'}. Saved.`;
       } catch {
         input.checked = !input.checked;
@@ -42,8 +47,14 @@
   }
   api.storage.local.get(BetterYouTube.defaults).then(saved => {
     inputs.forEach(input => {
+      if (input.name === 'skipAds') return;
       input.checked = saved[input.name] !== false;
       input.disabled = false;
     });
   }).catch(() => { status.textContent = 'Could not load preferences. Reopen this popup to retry.'; });
+  const skip = inputs.find(input => input.name === 'skipAds');
+  api.declarativeNetRequest.getEnabledRulesets().then(ids => {
+    skip.checked = ids.includes('skipAds');
+    skip.disabled = false;
+  }).catch(() => { status.textContent = 'Could not load Skip ads.'; });
 })();

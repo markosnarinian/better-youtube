@@ -3,7 +3,10 @@
   "name": "Better YouTube",
   "version": "0.1.0",
   "description": "Quiet ads, fewer distractions, intentional playback, and PiP resume recovery.",
-  "permissions": ["storage"],
+  "permissions": ["storage", "declarativeNetRequestWithHostAccess"],
+  "declarative_net_request": {
+    "rule_resources": [{ "id": "skipAds", "enabled": true, "path": "skip-ads.json" }]
+  },
   "host_permissions": ["https://www.youtube.com/*", "https://m.youtube.com/*"],
   "action": {
     "default_title": "Better YouTube",

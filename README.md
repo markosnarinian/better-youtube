@@ -1,9 +1,10 @@
 # Better YouTube
 
-A Safari Web Extension with five independent, persistent toolbar switches. All are enabled by default. It only requests access to `www.youtube.com`, `m.youtube.com`, and local extension storage. No account, analytics, remote code, or network-blocking permissions.
+A Safari Web Extension with six independent toolbar switches, all enabled by default. It requests local storage and host-scoped request filtering for `www.youtube.com` and `m.youtube.com`. No account, analytics, or remote code.
 
 ## Features
 
+- **Skip ads:** block separate `/youtubei/v1/player/ad_break` and `/pagead/` requests on YouTube before playback, using paths from [EasyList](https://github.com/easylist/easylist/blob/master/easylist/easylist_specific_block.txt). Turning it off lets future requests through immediately. It does not cancel an ad already loaded, filter ordinary player responses, or remove ads stitched into the stream. Quiet ads works independently as a fallback.
 - **Quiet ads:** cover the player in black, mute ad playback, attempt to click the first visible/enabled Skip button, and restore the video’s prior mute state. The cover relays YouTube’s localized skip countdown and ad position/count when available, including multi-ad breaks. Sponsored slots and player promotions are hidden. **This Mac's current YouTube player rejects automatic Skip clicks.** Its real Skip button remains usable on the cover, so a manual click can finish the ad without uncovering or unmuting it. Automatic skipping is best-effort, not guaranteed.
 - **No rabbit holes:** hide the recommendations sidebar, Up next, end screens, cards, next-video button, and autoplay cues. Disable YouTube’s autoplay control when it is enabled; switching this feature off restores the control if this extension disabled it.
 - **PiP resume recovery:** after a PiP play event, check whether playback is progressing. If it is stalled, retry YouTube’s resume path and the native media play operation, with a bounded seek within the existing stream. Pausing cancels recovery. It never periodically resumes an intentionally paused video or reloads the video source.
@@ -20,7 +21,7 @@ The click-to-play feature has been removed: ordinary videos follow YouTube and S
 2. In Settings → Developer, click **Add Temporary Extension…**. Authenticate Safari’s request to allow unsigned extensions yourself.
 3. Select `/Users/markos/better-youtube/extension` (the folder containing `manifest.json`), or `dist/Better YouTube.zip`.
 4. Enable **Better YouTube** in Settings → Extensions, and allow it on YouTube.
-5. Reload existing YouTube tabs once. Click the Better YouTube toolbar icon to see the five switches. After source updates, use Settings → Extensions → Better YouTube → Reload, then reload YouTube tabs to remove previously injected code.
+5. Reload existing YouTube tabs once. Click the Better YouTube toolbar icon to see the six switches. After source updates, use Settings → Extensions → Better YouTube → Reload, then reload YouTube tabs to remove previously injected code.
 
 Apple removes temporary extensions when Safari quits or after 24 hours. **This is a development-loadable extension, not a permanently installed/signed Mac app.**
 
@@ -71,7 +72,7 @@ The live player did not provide the exact skip countdown or ad count, and automa
 ## Important limits
 
 - YouTube changes its markup and runs account/region-specific experiments. Selectors cover known placements; “every trace” of Shorts or every promotional format cannot be guaranteed indefinitely.
-- This does not remove ads from the stream, bypass unskippable ads, dismiss consent/sign-in dialogs, or bypass YouTube’s ad-block enforcement. It skips only when YouTube exposes an enabled Skip button.
+- Skip ads only filters separate requests matching its rules. For ads that still play, Quiet ads tries YouTube’s enabled Skip button. Neither feature dismisses consent/sign-in dialogs or bypasses ad-block enforcement.
 - YouTube sometimes does not expose an exact skip countdown or ad total. The cover explicitly reports that information as unavailable instead of inventing numbers.
 - A DOM overlay cannot cover Safari’s **native PiP window**. Ad muting still applies, but the black overlay is for the webpage player.
 - Safari may suspend background pages. JavaScript cannot recover playback while the browser has fully suspended the page, and OS-level PiP decoder failures may require a Safari fix.
